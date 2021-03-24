@@ -32,8 +32,6 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
       type,
     });
 
-    //test
-
     setType("deposit");
     setTitle("");
     setAmount(0);
