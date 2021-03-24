@@ -1,9 +1,10 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useState, useContext } from "react";
 import Modal from "react-modal";
 import { Container, TransctionTypeContainer, RadioBox } from "./styles";
 import closeImg from "../../assets/close.svg";
 import incomeImg from "../../assets/income.svg";
 import outcomeImg from "../../assets/outcome.svg";
+import { TransactionsContext } from "../../TransactionsContext";
 interface NewTransactionModalProps {
   isOpen: boolean;
   onRequestClose(): void;
@@ -15,20 +16,27 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
   isOpen,
   onRequestClose,
 }) => {
+  const { createTransaction } = useContext(TransactionsContext);
   const [type, setType] = useState("deposit");
   const [title, setTitle] = useState("");
-  const [value, setValue] = useState(0);
+  const [amount, setAmount] = useState(0);
   const [category, setCategory] = useState("");
 
-  function handleCreateNewTransaction(event: FormEvent) {
+  async function handleCreateNewTransaction(event: FormEvent) {
     event.preventDefault();
 
-    const data = {
+    await createTransaction({
       title,
-      value,
+      amount,
       category,
       type,
-    };
+    });
+
+    setType("deposit");
+    setTitle("");
+    setAmount(0);
+    setCategory("");
+    onRequestClose();
   }
 
   return (
@@ -58,8 +66,8 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
         <input
           placeholder="Valor"
           type="number"
-          value={value}
-          onChange={(event) => setValue(Number(event.target.value))}
+          value={amount}
+          onChange={(event) => setAmount(Number(event.target.value))}
         />
 
         <TransctionTypeContainer>
@@ -88,7 +96,7 @@ export const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
           value={category}
           onChange={(event) => setCategory(event.target.value)}
         />
-        <button type="submit" onSubmit={handleCreateNewTransaction}>
+        <button type="submit" onClick={handleCreateNewTransaction}>
           Cadastrar
         </button>
       </Container>
